@@ -1,11 +1,17 @@
 ﻿using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace SimpleImageEditor
 {
+    enum DrawType { FreeHand, Line, Circle, Rectangle }
+
     public partial class MainForm : Form
     {
         private Point? _prevPoint;
+        private DrawType _drawType;
+
         public MainForm()
         {
             InitializeComponent();
@@ -15,18 +21,29 @@ namespace SimpleImageEditor
             }
             imageArea.Image = bitmap;
             _prevPoint = null;
+            _drawType = DrawType.FreeHand;
+        }
+
+        private void DrawPoint(int x, int y)
+        {
+            if (_prevPoint.HasValue) {
+                using (var g = Graphics.FromImage(imageArea.Image)) {
+                    var newPoint = new Point(x, y);
+                    g.DrawLine(new Pen(Color.Black), _prevPoint.Value, newPoint);
+                }
+                imageArea.Invalidate();
+            }
+            _prevPoint = new Point(x, y);
         }
 
         private void imageArea_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left) {
-                if (_prevPoint.HasValue) {
-                    using (var g = Graphics.FromImage(imageArea.Image)) {
-                        g.DrawLine(new Pen(Color.Black), _prevPoint.Value, new Point(e.X, e.Y));
-                    }
-                    imageArea.Invalidate();
+                switch (_drawType) {
+                    case DrawType.FreeHand:
+                        DrawPoint(e.X, e.Y);
+                        break;
                 }
-                _prevPoint = new Point(e.X, e.Y);
             }
         }
 
@@ -37,18 +54,18 @@ namespace SimpleImageEditor
 
         private void invertImageToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            var image = (Bitmap)imageArea.Image;
-            for (int i = 0; i < image.Width; i++) {
-                for (int j = 0; j < image.Height; j++) {
-                    var current = image.GetPixel(i, j);
-                    var r = 255 - current.R;
-                    var g = 255 - current.G;
-                    var b = 255 - current.B;
-                    image.SetPixel(i, j, Color.FromArgb(r, g, b));
-                }
-            }
-            imageArea.Image = image;
+            var newImage = ImageHelpers.InvertBitmap((Bitmap)imageArea.Image);
+            imageArea.Image = newImage;
             imageArea.Invalidate();
+        }
+
+        #region File menu handlers
+        private void openToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            var res = openImageDialog.ShowDialog();
+            if (res == DialogResult.OK) {
+                imageArea.Image = new Bitmap(openImageDialog.FileName);
+            }
         }
 
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
@@ -58,10 +75,28 @@ namespace SimpleImageEditor
                 imageArea.Image.Save(saveImageDialog.FileName);
             }
         }
-
+        
         private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             Application.Exit();
         }
+        #endregion
+
+        #region Draw type menu handlers
+        private void freeHandToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            _drawType = DrawType.FreeHand;
+        }
+
+        private void circleToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            _drawType = DrawType.Circle;
+        }
+
+        private void rectangeToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            _drawType = DrawType.Rectangle;
+        }
+        #endregion
     }
 }
