@@ -12,6 +12,7 @@ namespace SimpleImageEditor
         private Point? _prevPoint;
         private Point? _shapePoint1;
         private Point? _shapePoint2;
+        private Color _fillColor;
 
         public MainForm()
         {
@@ -22,6 +23,7 @@ namespace SimpleImageEditor
             }
             imageArea.Image = bitmap;
             _drawMode = DrawMode.Pen;
+            _fillColor = Color.Black; // Цвет по умолчанию
         }
 
         private void DrawLine(Point p1, Point p2, Image image)
@@ -43,14 +45,15 @@ namespace SimpleImageEditor
 
         private void DrawShape(Point p1, Point p2)
         {
-            var pen = new Pen(Color.Black);
+            var pen = new Pen(Color.Black); // пусть пока ченой будет
+            var brush = new SolidBrush(_fillColor);
             using (var g = Graphics.FromImage(imageArea.Image)) {
                 switch (_drawMode) {
                     case DrawMode.Circle:
-                        g.DrawEllipse(pen, ImageHelpers.RectangleFromCoords(p1, p2));
+                        g.FillEllipse(brush, ImageHelpers.RectangleFromCoords(p1, p2));
                         break;
                     case DrawMode.Rectangle:
-                        g.DrawRectangle(pen, ImageHelpers.RectangleFromCoords(p1, p2));
+                        g.FillRectangle(brush, ImageHelpers.RectangleFromCoords(p1, p2));
                         break;
                     case DrawMode.Line:
                         g.DrawLine(pen, p1, p2);
@@ -159,6 +162,14 @@ namespace SimpleImageEditor
                     break;
             }
             imageArea.Invalidate();
+        }
+
+        private void setFillColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var res = fillColorDialog.ShowDialog();
+            if (res == DialogResult.OK) {
+                _fillColor = fillColorDialog.Color;
+            }
         }
     }
 }

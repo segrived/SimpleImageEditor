@@ -37,11 +37,13 @@
             this.invertImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.drawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.freeHandToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.circleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rectangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
-            this.lineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setFillColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fillColorDialog = new System.Windows.Forms.ColorDialog();
             ((System.ComponentModel.ISupportInitialize)(this.imageArea)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -63,7 +65,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.drawToolStripMenuItem});
+            this.drawToolStripMenuItem,
+            this.setFillColorToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(514, 24);
@@ -134,6 +137,13 @@
             this.freeHandToolStripMenuItem.Text = "Free Hand";
             this.freeHandToolStripMenuItem.Click += new System.EventHandler(this.freeHandToolStripMenuItem_Click);
             // 
+            // lineToolStripMenuItem
+            // 
+            this.lineToolStripMenuItem.Name = "lineToolStripMenuItem";
+            this.lineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lineToolStripMenuItem.Text = "Line";
+            this.lineToolStripMenuItem.Click += new System.EventHandler(this.lineToolStripMenuItem_Click);
+            // 
             // circleToolStripMenuItem
             // 
             this.circleToolStripMenuItem.Name = "circleToolStripMenuItem";
@@ -157,12 +167,12 @@
             // 
             this.openImageDialog.FileName = "openFileDialog1";
             // 
-            // lineToolStripMenuItem
+            // setFillColorToolStripMenuItem
             // 
-            this.lineToolStripMenuItem.Name = "lineToolStripMenuItem";
-            this.lineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.lineToolStripMenuItem.Text = "Line";
-            this.lineToolStripMenuItem.Click += new System.EventHandler(this.lineToolStripMenuItem_Click);
+            this.setFillColorToolStripMenuItem.Name = "setFillColorToolStripMenuItem";
+            this.setFillColorToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
+            this.setFillColorToolStripMenuItem.Text = "Set fill color";
+            this.setFillColorToolStripMenuItem.Click += new System.EventHandler(this.setFillColorToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -199,6 +209,8 @@
         private System.Windows.Forms.ToolStripMenuItem circleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rectangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setFillColorToolStripMenuItem;
+        private System.Windows.Forms.ColorDialog fillColorDialog;
     }
 }
 
