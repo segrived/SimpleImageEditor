@@ -41,6 +41,7 @@
             this.rectangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
+            this.lineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.imageArea)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -55,6 +56,7 @@
             this.imageArea.TabStop = false;
             this.imageArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageArea_MouseDown);
             this.imageArea.MouseMove += new System.Windows.Forms.MouseEventHandler(this.imageArea_MouseMove);
+            this.imageArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.imageArea_MouseUp);
             // 
             // menuStrip1
             // 
@@ -118,6 +120,7 @@
             // 
             this.drawToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.freeHandToolStripMenuItem,
+            this.lineToolStripMenuItem,
             this.circleToolStripMenuItem,
             this.rectangeToolStripMenuItem});
             this.drawToolStripMenuItem.Name = "drawToolStripMenuItem";
@@ -154,6 +157,13 @@
             // 
             this.openImageDialog.FileName = "openFileDialog1";
             // 
+            // lineToolStripMenuItem
+            // 
+            this.lineToolStripMenuItem.Name = "lineToolStripMenuItem";
+            this.lineToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lineToolStripMenuItem.Text = "Line";
+            this.lineToolStripMenuItem.Click += new System.EventHandler(this.lineToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -188,6 +198,7 @@
         private System.Windows.Forms.ToolStripMenuItem freeHandToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem circleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rectangeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lineToolStripMenuItem;
     }
 }
 
