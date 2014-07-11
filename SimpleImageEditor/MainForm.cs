@@ -138,6 +138,24 @@ namespace SimpleImageEditor
         }
         #endregion
 
+        #region Set color menu handlers
+        private void fillColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var res = fillColorDialog.ShowDialog();
+            if (res == DialogResult.OK) {
+                _fillColor = fillColorDialog.Color;
+            }
+        }
+
+        private void borderColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var res = borderColorDialog.ShowDialog();
+            if (res == DialogResult.OK) {
+                _borderColor = borderColorDialog.Color;
+            }
+        }
+        #endregion
+
         private void SetDrawType(DrawMode newType)
         {
             _drawMode = newType;
@@ -165,7 +183,9 @@ namespace SimpleImageEditor
                 case DrawMode.Pen:
                     _prevPoint = null;
                     break;
-                case DrawMode.Circle: case DrawMode.Rectangle: case DrawMode.Line:
+                case DrawMode.Circle:
+                case DrawMode.Rectangle:
+                case DrawMode.Line:
                     if (_shapePoint1 == null) {
                         _shapePoint1 = new Point(e.X, e.Y);
                     } else if (_shapePoint2 == null) {
@@ -176,22 +196,6 @@ namespace SimpleImageEditor
                     break;
             }
             imageArea.Invalidate();
-        }
-
-        private void fillColorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var res = fillColorDialog.ShowDialog();
-            if (res == DialogResult.OK) {
-                _fillColor = fillColorDialog.Color;
-            }
-        }
-
-        private void borderColorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var res = borderColorDialog.ShowDialog();
-            if (res == DialogResult.OK) {
-                _borderColor = borderColorDialog.Color;
-            }
         }
 
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
