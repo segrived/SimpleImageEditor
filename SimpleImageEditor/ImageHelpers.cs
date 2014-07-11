@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Threading;
 
 namespace SimpleImageEditor
 {
     static class ImageHelpers
     {
+        public static float GetDistance(Point p1, Point p2)
+        {
+            double a = p1.X - p2.X;
+            double b = p1.Y - p2.Y;
+            return (float)Math.Sqrt(a * a + b * b);
+        }
+
+
         public static Rectangle RectangleFromCoords(Point p1, Point p2)
         {
             var xMin = Math.Min(p1.X, p2.X);

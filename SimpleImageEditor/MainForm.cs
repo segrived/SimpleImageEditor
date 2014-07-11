@@ -60,7 +60,9 @@ namespace SimpleImageEditor
             using (var g = Graphics.FromImage(imageArea.Image)) {
                 switch (_drawMode) {
                     case DrawMode.Circle:
-                        g.FillEllipse(brush, ImageHelpers.RectangleFromCoords(p1, p2));
+                        var dist = ImageHelpers.GetDistance(p1, p2);
+                        g.FillEllipse(brush, p1.X - dist, p1.Y - dist, dist * 2, dist * 2);
+                        //g.FillEllipse(brush, ImageHelpers.RectangleFromCoords(p1, p2));
                         break;
                     case DrawMode.Rectangle:
                         g.FillRectangle(brush, ImageHelpers.RectangleFromCoords(p1, p2));
@@ -198,12 +200,13 @@ namespace SimpleImageEditor
             var input = new Bitmap(cl);
             var newImage = new Bitmap(input.Width, input.Height);
             var pixels = input.Height * input.Width;
+            var height = input.Height;
             for (int i = 0; i < input.Width; i++) {
                 for (int j = 0; j < input.Height; j++) {
                     var current = input.GetPixel(i, j);
                     newImage.SetPixel(i, j, ImageHelpers.InvertPixel(current));
-                    var progress = (int)(((i * input.Height) + j) / (float)pixels * 100);
-                    bw.ReportProgress(progress);
+                    var progress = (i * height + j) / (float)pixels * 100;
+                    bw.ReportProgress((int)progress);
                 }
             }
             e.Result = newImage;
