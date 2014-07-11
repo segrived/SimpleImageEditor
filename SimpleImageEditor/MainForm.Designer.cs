@@ -198,7 +198,7 @@
             // applyEffectProgress
             // 
             this.applyEffectProgress.Name = "applyEffectProgress";
-            this.applyEffectProgress.Size = new System.Drawing.Size(100, 16);
+            this.applyEffectProgress.Size = new System.Drawing.Size(200, 16);
             this.applyEffectProgress.Step = 1;
             // 
             // MainForm

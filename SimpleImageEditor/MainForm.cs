@@ -24,8 +24,9 @@ namespace SimpleImageEditor
                 g.FillRectangle(Brushes.White, new Rectangle(0, 0, imageArea.Width, imageArea.Height));
             }
             imageArea.Image = bitmap;
+            // Параметры по умолчанию
             _drawMode = DrawMode.Pen;
-            _fillColor = Color.Black; // Цвет по умолчанию
+            _fillColor = Color.Black;
         }
 
         private void DrawLine(Point p1, Point p2, Image image)
@@ -72,26 +73,16 @@ namespace SimpleImageEditor
             imageArea.Invalidate();
         }
 
-        private void imageArea_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
-                DrawLine(e.X, e.Y);
-            }
-        }
 
-        private void imageArea_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
-                DrawPoint(e.X, e.Y, imageArea.Image);
-            }
-        }
 
         private void invertImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            imageBackgroundWorker.RunWorkerAsync();
-            //var newImage = ImageHelpers.InvertBitmap((Bitmap)imageArea.Image);
-            //imageArea.Image = newImage;
-            imageArea.Invalidate();
+            if (! imageBackgroundWorker.IsBusy) {
+                imageBackgroundWorker.RunWorkerAsync();
+                //var newImage = ImageHelpers.InvertBitmap((Bitmap)imageArea.Image);
+                //imageArea.Image = newImage;
+                imageArea.Invalidate();
+            }
         }
 
         #region File menu handlers
@@ -145,6 +136,20 @@ namespace SimpleImageEditor
             _shapePoint1 = _shapePoint2 = null;
         }
 
+        private void imageArea_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
+                DrawLine(e.X, e.Y);
+            }
+        }
+
+        private void imageArea_MouseDown(object sender, MouseEventArgs e)
+        {
+        //    if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
+        //        DrawPoint(e.X, e.Y, imageArea.Image);
+        //    }
+        }
+
         private void imageArea_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -182,13 +187,15 @@ namespace SimpleImageEditor
         {
             var invertedImage = (Bitmap)e.Result;
             imageArea.Image = invertedImage;
+            applyEffectProgress.Value = 0;
             MessageBox.Show(@"Изображение было инвертировано");
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var bw = (BackgroundWorker)sender;
-            var input = new Bitmap(imageArea.Image);
+            var cl = (Bitmap)imageArea.Image.Clone();
+            var input = new Bitmap(cl);
             var newImage = new Bitmap(input.Width, input.Height);
             var pixels = input.Height * input.Width;
             for (int i = 0; i < input.Width; i++) {
