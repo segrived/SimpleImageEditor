@@ -21,21 +21,14 @@ namespace SimpleImageEditor
         {
             InitializeComponent();
             var bitmap = new Bitmap(imageArea.Width, imageArea.Height);
+            imageArea.Image = bitmap;
             using (var g = Graphics.FromImage(bitmap)) {
                 g.FillRectangle(Brushes.White, new Rectangle(0, 0, imageArea.Width, imageArea.Height));
             }
-            imageArea.Image = bitmap;
             // Параметры по умолчанию
             _drawMode = DrawMode.Pen;
             _fillColor = Color.Black;
             _borderColor = Color.Gray;
-        }
-
-        private void DrawLine(Point p1, Point p2, Image image)
-        {
-            using (var g = Graphics.FromImage(image)) {
-                g.DrawLine(new Pen(Color.Black), p1, p2);
-            }
         }
 
         private void DrawPoint(int x, int y, Image image)
@@ -49,7 +42,9 @@ namespace SimpleImageEditor
         {
             if (_prevPenPoint.HasValue) {
                 var newPoint = new Point(x, y);
-                DrawLine(_prevPenPoint.Value, newPoint, imageArea.Image);
+                using (var g = Graphics.FromImage(imageArea.Image)) {
+                    g.DrawLine(new Pen(Color.Black), _prevPenPoint.Value, newPoint);
+                }
                 imageArea.Invalidate();
             }
             _prevPenPoint = new Point(x, y);
@@ -63,7 +58,8 @@ namespace SimpleImageEditor
                 switch (_drawMode) {
                     case DrawMode.Circle:
                         var dist = ImageHelpers.GetDistance(p1, p2);
-                        var circleRect = new RectangleF(p1.X - dist, p1.Y - dist, dist * 2, dist * 2);
+                        var diameter = dist * 2;
+                        var circleRect = new RectangleF(p1.X - dist, p1.Y - dist, diameter, diameter);
                         g.FillEllipse(fillBrush, circleRect);
                         g.DrawEllipse(borderPen, circleRect);
                         //g.FillEllipse(brush, ImageHelpers.RectangleFromCoords(p1, p2));
