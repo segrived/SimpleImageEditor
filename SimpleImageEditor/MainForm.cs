@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SimpleImageEditor
@@ -30,6 +32,13 @@ namespace SimpleImageEditor
         {
             using (var g = Graphics.FromImage(image)) {
                 g.DrawLine(new Pen(Color.Black), p1, p2);
+            }
+        }
+
+        private void DrawPoint(int x, int y, Image image)
+        {
+            using (var g = Graphics.FromImage(image)) {
+                g.FillRectangle(Brushes.Black, x, y, 1, 1);
             }
         }
 
@@ -65,31 +74,23 @@ namespace SimpleImageEditor
 
         private void imageArea_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_drawMode != DrawMode.Pen) {
-                return;
-            }
-            if (e.Button == MouseButtons.Left) {
-                switch (_drawMode) {
-                    case DrawMode.Pen:
-                        DrawLine(e.X, e.Y);
-                        break;
-                }
+            if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
+                DrawLine(e.X, e.Y);
             }
         }
 
         private void imageArea_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
-                using (var g = Graphics.FromImage(imageArea.Image)) {
-                    g.FillRectangle(Brushes.Black, e.X, e.Y, 1, 1);
-                }
+                DrawPoint(e.X, e.Y, imageArea.Image);
             }
         }
 
         private void invertImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var newImage = ImageHelpers.InvertBitmap((Bitmap)imageArea.Image);
-            imageArea.Image = newImage;
+            imageBackgroundWorker.RunWorkerAsync();
+            //var newImage = ImageHelpers.InvertBitmap((Bitmap)imageArea.Image);
+            //imageArea.Image = newImage;
             imageArea.Invalidate();
         }
 
@@ -170,6 +171,35 @@ namespace SimpleImageEditor
             if (res == DialogResult.OK) {
                 _fillColor = fillColorDialog.Color;
             }
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            applyEffectProgress.Value = e.ProgressPercentage;
+        }
+
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var invertedImage = (Bitmap)e.Result;
+            imageArea.Image = invertedImage;
+            MessageBox.Show(@"Изображение было инвертировано");
+        }
+
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var bw = (BackgroundWorker)sender;
+            var input = new Bitmap(imageArea.Image);
+            var newImage = new Bitmap(input.Width, input.Height);
+            var pixels = input.Height * input.Width;
+            for (int i = 0; i < input.Width; i++) {
+                for (int j = 0; j < input.Height; j++) {
+                    var current = input.GetPixel(i, j);
+                    newImage.SetPixel(i, j, ImageHelpers.InvertPixel(current));
+                    var progress = (int)(((i * input.Height) + j) / (float)pixels * 100);
+                    bw.ReportProgress(progress);
+                }
+            }
+            e.Result = newImage;
         }
     }
 }

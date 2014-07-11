@@ -44,8 +44,12 @@
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
             this.setFillColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillColorDialog = new System.Windows.Forms.ColorDialog();
+            this.imageBackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.applyEffectProgress = new System.Windows.Forms.ToolStripProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.imageArea)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageArea
@@ -53,7 +57,7 @@
             this.imageArea.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageArea.Location = new System.Drawing.Point(0, 24);
             this.imageArea.Name = "imageArea";
-            this.imageArea.Size = new System.Drawing.Size(514, 332);
+            this.imageArea.Size = new System.Drawing.Size(450, 326);
             this.imageArea.TabIndex = 0;
             this.imageArea.TabStop = false;
             this.imageArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageArea_MouseDown);
@@ -69,7 +73,7 @@
             this.setFillColorToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(514, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(450, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -115,7 +119,7 @@
             // invertImageToolStripMenuItem
             // 
             this.invertImageToolStripMenuItem.Name = "invertImageToolStripMenuItem";
-            this.invertImageToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.invertImageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.invertImageToolStripMenuItem.Text = "Invert colors";
             this.invertImageToolStripMenuItem.Click += new System.EventHandler(this.invertImageToolStripMenuItem_Click);
             // 
@@ -174,11 +178,35 @@
             this.setFillColorToolStripMenuItem.Text = "Set fill color";
             this.setFillColorToolStripMenuItem.Click += new System.EventHandler(this.setFillColorToolStripMenuItem_Click);
             // 
+            // imageBackgroundWorker
+            // 
+            this.imageBackgroundWorker.WorkerReportsProgress = true;
+            this.imageBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
+            this.imageBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
+            this.imageBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applyEffectProgress});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 328);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(450, 22);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // applyEffectProgress
+            // 
+            this.applyEffectProgress.Name = "applyEffectProgress";
+            this.applyEffectProgress.Size = new System.Drawing.Size(100, 16);
+            this.applyEffectProgress.Step = 1;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(514, 356);
+            this.ClientSize = new System.Drawing.Size(450, 350);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.imageArea);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -187,6 +215,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.imageArea)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -211,6 +241,9 @@
         private System.Windows.Forms.ToolStripMenuItem lineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setFillColorToolStripMenuItem;
         private System.Windows.Forms.ColorDialog fillColorDialog;
+        private System.ComponentModel.BackgroundWorker imageBackgroundWorker;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripProgressBar applyEffectProgress;
     }
 }
 
