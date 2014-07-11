@@ -15,6 +15,7 @@ namespace SimpleImageEditor
         private Point? _shapePoint1;
         private Point? _shapePoint2;
         private Color _fillColor;
+        private Color _borderColor;
 
         public MainForm()
         {
@@ -27,6 +28,7 @@ namespace SimpleImageEditor
             // Параметры по умолчанию
             _drawMode = DrawMode.Pen;
             _fillColor = Color.Black;
+            _borderColor = Color.Gray;
         }
 
         private void DrawLine(Point p1, Point p2, Image image)
@@ -55,20 +57,24 @@ namespace SimpleImageEditor
 
         private void DrawShape(Point p1, Point p2)
         {
-            var pen = new Pen(Color.Black); // пусть пока ченой будет
-            var brush = new SolidBrush(_fillColor);
+            var fillBrush = new SolidBrush(_fillColor); // цвет заливки
+            var borderPen = new Pen(_borderColor); // цвет рамки
             using (var g = Graphics.FromImage(imageArea.Image)) {
                 switch (_drawMode) {
                     case DrawMode.Circle:
                         var dist = ImageHelpers.GetDistance(p1, p2);
-                        g.FillEllipse(brush, p1.X - dist, p1.Y - dist, dist * 2, dist * 2);
+                        var circleRect = new RectangleF(p1.X - dist, p1.Y - dist, dist * 2, dist * 2);
+                        g.FillEllipse(fillBrush, circleRect);
+                        g.DrawEllipse(borderPen, circleRect);
                         //g.FillEllipse(brush, ImageHelpers.RectangleFromCoords(p1, p2));
                         break;
                     case DrawMode.Rectangle:
-                        g.FillRectangle(brush, ImageHelpers.RectangleFromCoords(p1, p2));
+                        var rect = ImageHelpers.RectangleFromCoords(p1, p2);
+                        g.FillRectangle(fillBrush, rect);
+                        g.DrawRectangle(borderPen, rect);
                         break;
                     case DrawMode.Line:
-                        g.DrawLine(pen, p1, p2);
+                        g.DrawLine(new Pen(Color.Black), p1, p2);
                         break;
                 }
             }
@@ -172,11 +178,19 @@ namespace SimpleImageEditor
             imageArea.Invalidate();
         }
 
-        private void setFillColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void fillColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var res = fillColorDialog.ShowDialog();
             if (res == DialogResult.OK) {
                 _fillColor = fillColorDialog.Color;
+            }
+        }
+
+        private void borderColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var res = borderColorDialog.ShowDialog();
+            if (res == DialogResult.OK) {
+                _borderColor = borderColorDialog.Color;
             }
         }
 
