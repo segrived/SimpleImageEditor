@@ -11,7 +11,7 @@ namespace SimpleImageEditor
     public partial class MainForm : Form
     {
         private DrawMode _drawMode;
-        private Point? _prevPoint;
+        private Point? _prevPenPoint;
         private Point? _shapePoint1;
         private Point? _shapePoint2;
         private Color _fillColor;
@@ -47,12 +47,12 @@ namespace SimpleImageEditor
 
         private void DrawLine(int x, int y)
         {
-            if (_prevPoint.HasValue) {
+            if (_prevPenPoint.HasValue) {
                 var newPoint = new Point(x, y);
-                DrawLine(_prevPoint.Value, newPoint, imageArea.Image);
+                DrawLine(_prevPenPoint.Value, newPoint, imageArea.Image);
                 imageArea.Invalidate();
             }
-            _prevPoint = new Point(x, y);
+            _prevPenPoint = new Point(x, y);
         }
 
         private void DrawShape(Point p1, Point p2)
@@ -171,9 +171,9 @@ namespace SimpleImageEditor
 
         private void imageArea_MouseDown(object sender, MouseEventArgs e)
         {
-        //    if (e.Button == MouseButtons.Left && _drawMode == DrawMode.Pen) {
-        //        DrawPoint(e.X, e.Y, imageArea.Image);
-        //    }
+            if (e.Button == MouseButtons.Left && _drawMode != DrawMode.Pen) {
+                _shapePoint1 = new Point(e.X, e.Y);
+            }
         }
 
         private void imageArea_MouseUp(object sender, MouseEventArgs e)
@@ -181,17 +181,12 @@ namespace SimpleImageEditor
             if (e.Button != MouseButtons.Left) return;
             switch (_drawMode) {
                 case DrawMode.Pen:
-                    _prevPoint = null;
+                    _prevPenPoint = null;
                     break;
-                case DrawMode.Circle:
-                case DrawMode.Rectangle:
-                case DrawMode.Line:
-                    if (_shapePoint1 == null) {
-                        _shapePoint1 = new Point(e.X, e.Y);
-                    } else if (_shapePoint2 == null) {
+                default:
+                    if (_shapePoint1.HasValue) {
                         _shapePoint2 = new Point(e.X, e.Y);
                         DrawShape(_shapePoint1.Value, _shapePoint2.Value);
-                        _shapePoint1 = _shapePoint2 = null;
                     }
                     break;
             }
