@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SimpleImageEditor
@@ -10,6 +11,7 @@ namespace SimpleImageEditor
 
     public partial class MainForm : Form
     {
+        private Bitmap _workingBitmap;
         private DrawMode _drawMode;
         private Point? _prevPenPoint;
         private Point? _shapePoint1;
@@ -21,31 +23,31 @@ namespace SimpleImageEditor
         {
             InitializeComponent();
             var bitmap = new Bitmap(imageArea.Width, imageArea.Height);
-            imageArea.Image = bitmap;
             using (var g = Graphics.FromImage(bitmap)) {
                 g.FillRectangle(Brushes.White, new Rectangle(0, 0, imageArea.Width, imageArea.Height));
             }
+            _workingBitmap = bitmap;
             // Параметры по умолчанию
             _drawMode = DrawMode.Pen;
             _fillColor = Color.Black;
             _borderColor = Color.Gray;
+            SyncPicture();
         }
 
-        private void DrawPoint(int x, int y, Image image)
+        public void SyncPicture()
         {
-            using (var g = Graphics.FromImage(image)) {
-                g.FillRectangle(Brushes.Black, x, y, 1, 1);
-            }
+            imageArea.Image = _workingBitmap;
+            imageArea.Invalidate();
         }
 
         private void DrawLine(int x, int y)
         {
             if (_prevPenPoint.HasValue) {
                 var newPoint = new Point(x, y);
-                using (var g = Graphics.FromImage(imageArea.Image)) {
+                using (var g = Graphics.FromImage(_workingBitmap)) {
                     g.DrawLine(new Pen(Color.Black), _prevPenPoint.Value, newPoint);
                 }
-                imageArea.Invalidate();
+                SyncPicture();
             }
             _prevPenPoint = new Point(x, y);
         }
@@ -54,7 +56,7 @@ namespace SimpleImageEditor
         {
             var fillBrush = new SolidBrush(_fillColor); // цвет заливки
             var borderPen = new Pen(_borderColor); // цвет рамки
-            using (var g = Graphics.FromImage(imageArea.Image)) {
+            using (var g = Graphics.FromImage(_workingBitmap)) {
                 switch (_drawMode) {
                     case DrawMode.Circle:
                         var dist = ImageHelpers.GetDistance(p1, p2);
@@ -74,22 +76,22 @@ namespace SimpleImageEditor
                         break;
                 }
             }
-            imageArea.Invalidate();
+            SyncPicture();
         }
 
 
 
-        private void invertImageToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void invertImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (! imageBackgroundWorker.IsBusy) {
-                imageBackgroundWorker.RunWorkerAsync();
-                //var newImage = ImageHelpers.InvertBitmap((Bitmap)imageArea.Image);
-                //imageArea.Image = newImage;
-                imageArea.Invalidate();
-            }
+            var input = (Bitmap)_workingBitmap.Clone();
+            var progressUpdate = new Progress<int>(p => applyEffectProgress.Value = p);
+            _workingBitmap = await ImageAdjustments.Invert(input, progressUpdate);
+            applyEffectProgress.Value = 0;
+            SyncPicture();
         }
 
         #region File menu handlers
+
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var res = openImageDialog.ShowDialog();
@@ -105,14 +107,16 @@ namespace SimpleImageEditor
                 imageArea.Image.Save(saveImageDialog.FileName);
             }
         }
-        
+
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
+
         #endregion
 
         #region Draw mode menu handlers
+
         private void freeHandToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _drawMode = DrawMode.Pen;
@@ -132,9 +136,11 @@ namespace SimpleImageEditor
         {
             SetDrawType(DrawMode.Rectangle);
         }
+
         #endregion
 
         #region Set color menu handlers
+
         private void fillColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var res = fillColorDialog.ShowDialog();
@@ -150,6 +156,7 @@ namespace SimpleImageEditor
                 _borderColor = borderColorDialog.Color;
             }
         }
+
         #endregion
 
         private void SetDrawType(DrawMode newType)
@@ -188,37 +195,6 @@ namespace SimpleImageEditor
             }
             imageArea.Invalidate();
         }
-
-        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            applyEffectProgress.Value = e.ProgressPercentage;
-        }
-
-        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            var invertedImage = (Bitmap)e.Result;
-            imageArea.Image = invertedImage;
-            applyEffectProgress.Value = 0;
-            MessageBox.Show(@"Изображение было инвертировано");
-        }
-
-        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            var bw = (BackgroundWorker)sender;
-            var cl = (Bitmap)imageArea.Image.Clone();
-            var input = new Bitmap(cl);
-            var newImage = new Bitmap(input.Width, input.Height);
-            var pixels = input.Height * input.Width;
-            var height = input.Height;
-            for (int i = 0; i < input.Width; i++) {
-                for (int j = 0; j < input.Height; j++) {
-                    var current = input.GetPixel(i, j);
-                    newImage.SetPixel(i, j, ImageHelpers.InvertPixel(current));
-                    var progress = (i * height + j) / (float)pixels * 100;
-                    bw.ReportProgress((int)progress);
-                }
-            }
-            e.Result = newImage;
-        }
     }
+
 }

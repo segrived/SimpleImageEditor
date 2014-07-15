@@ -46,7 +46,6 @@
             this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
             this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
             this.fillColorDialog = new System.Windows.Forms.ColorDialog();
-            this.imageBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.applyEffectProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.borderColorDialog = new System.Windows.Forms.ColorDialog();
@@ -197,13 +196,6 @@
             // 
             this.openImageDialog.FileName = "openFileDialog1";
             // 
-            // imageBackgroundWorker
-            // 
-            this.imageBackgroundWorker.WorkerReportsProgress = true;
-            this.imageBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
-            this.imageBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
-            this.imageBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -259,7 +251,6 @@
         private System.Windows.Forms.ToolStripMenuItem rectangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lineToolStripMenuItem;
         private System.Windows.Forms.ColorDialog fillColorDialog;
-        private System.ComponentModel.BackgroundWorker imageBackgroundWorker;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar applyEffectProgress;
         private System.Windows.Forms.ToolStripMenuItem colorsToolStripMenuItem;
